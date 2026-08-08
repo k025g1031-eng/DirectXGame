@@ -28,6 +28,9 @@
     <Filter Include="SkyDome">
       <UniqueIdentifier>{6c782eb8-ec88-4168-ad80-05c89149c546}</UniqueIdentifier>
     </Filter>
+    <Filter Include="MapChipField">
+      <UniqueIdentifier>{80272791-383f-409e-a1ad-b0007967029c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -44,6 +47,9 @@
     </ClCompile>
     <ClCompile Include="SkyDome.cpp">
       <Filter>SkyDome</Filter>
+    </ClCompile>
+    <ClCompile Include="MapChipField.cpp">
+      <Filter>MapChipField</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -107,6 +113,9 @@
     </ClInclude>
     <ClInclude Include="SkyDome.h">
       <Filter>SkyDome</Filter>
+    </ClInclude>
+    <ClInclude Include="MapChipField.h">
+      <Filter>MapChipField</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
