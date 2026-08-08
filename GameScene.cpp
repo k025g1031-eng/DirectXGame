@@ -51,7 +51,7 @@ void GameScene::Initialize() {
 	debugCamera_ = new DebugCamera(1280, 720);
 
 	// 天球モデルの生成
-	skydomeModel_ = Model::CreateFromOBJ("Resources/SkyDome/SkyDome", true);
+	skydomeModel_ = Model::CreateFromOBJ("skydome", true);
 
 	// 天球の生成
 	skydome_ = new Skydome();
