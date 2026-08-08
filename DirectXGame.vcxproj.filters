@@ -22,6 +22,9 @@
     <Filter Include="player">
       <UniqueIdentifier>{0edb85ab-b7f6-4add-8cf7-9a5d5fcd1d5b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="transform">
+      <UniqueIdentifier>{935bc9ec-980b-4e3f-8d03-13179658619c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -32,6 +35,9 @@
     </ClCompile>
     <ClCompile Include="player.cpp">
       <Filter>player</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform.cpp">
+      <Filter>transform</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -89,6 +95,9 @@
     </ClInclude>
     <ClInclude Include="player.h">
       <Filter>player</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>transform</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

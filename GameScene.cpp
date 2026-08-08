@@ -1,4 +1,5 @@
 #include "GameScene.h"
+#include "Transform.h"
 
 using namespace KamataEngine;
 
@@ -6,85 +7,139 @@ GameScene::GameScene() {}
 
 GameScene::~GameScene() {
 
-	delete player_;
-	player_ = nullptr;
+	// 3Dモデルデータの解放
+	delete blockModel_;
+	blockModel_ = nullptr;
 
-	delete model_;
-	model_ = nullptr;
+	// ブロックのワールド変換を解放
+	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 
+		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+
+			delete worldTransformBlock;
+		}
+	}
+
+	worldTransformBlocks_.clear();
+
+	// カメラの解放
 	delete camera_;
 	camera_ = nullptr;
 
+	// デバッグカメラの解放
 	delete debugCamera_;
 	debugCamera_ = nullptr;
 }
 
 void GameScene::Initialize() {
 
-	textureHandle_ = TextureManager::Load("mario.png");
-	soundDataHandle_ = Audio::GetInstance()->LoadWave("se_sad03.wav");
+	// 3Dモデルデータの生成
+	blockModel_ = Model::Create();
 
-	sprite_ = Sprite::Create(textureHandle_, {100, 50});
-
-	model_ = Model::Create();
-
-	debugCamera_ = new DebugCamera(1280, 720);
-
-	Audio::GetInstance()->PlayWave(soundDataHandle_);
-	voiceHandle_ = Audio::GetInstance()->PlayWave(soundDataHandle_, true);
-
-	player_ = new Player();
-
+	// カメラの生成
 	camera_ = new Camera();
 	camera_->Initialize();
 
-	PrimitiveDrawer::GetInstance()->SetCamera(camera_);
-	PrimitiveDrawer::GetInstance()->DrawLine3d({0, 0, 0}, {0, 10, 0}, {1.0f, 0.0f, 0.0f, 10.f});
+	// デバッグカメラの生成
+	debugCamera_ = new DebugCamera(1280, 720);
 
-	player_->Initialize(model_, textureHandle_, camera_);
-}
+	// 要素数
+	const uint32_t kNumBlockVertical = 10;
+	const uint32_t kNumBlockHorizontal = 20;
 
-void GameScene::Update() {
+	// ブロック1個分のサイズ
+	const float kBlockWidth = 2.0f;
+	const float kBlockHeight = 2.0f;
 
-	Vector2 position = sprite_->GetPosition();
+	// 縦方向の要素数を設定
+	worldTransformBlocks_.resize(kNumBlockVertical);
 
-	position.x += 2.0f;
-	position.y += 1.0f;
+	for (uint32_t i = 0; i < kNumBlockVertical; ++i) {
 
-	sprite_->SetPosition(position);
-
-	player_->Update();
-
-	if (Input::GetInstance()->TriggerKey(DIK_SPACE)) {
-		Audio::GetInstance()->StopWave(voiceHandle_);
+		// 横方向の要素数を設定
+		worldTransformBlocks_[i].resize(kNumBlockHorizontal);
 	}
 
-	ImGui::Begin("Debug1");
+	// ブロックの生成
+	for (uint32_t i = 0; i < kNumBlockVertical; ++i) {
+
+		for (uint32_t j = 0; j < kNumBlockHorizontal; ++j) {
+
+			worldTransformBlocks_[i][j] = new WorldTransform();
+
+			worldTransformBlocks_[i][j]->Initialize();
+
+			// 横方向の座標
+			worldTransformBlocks_[i][j]->translation_.x = kBlockWidth * j;
+
+			// 縦方向の座標
+			worldTransformBlocks_[i][j]->translation_.y = kBlockHeight * i;
+		}
+	}
+}
+void GameScene::Update() {
 
 #ifdef _DEBUG
-	ImGui::Text("Kamata Tarouj %d.%d.%d", 2050, 12, 31);
+
+	if (Input::GetInstance()->TriggerKey(DIK_SPACE)) {
+		isDebugCameraActive_ = !isDebugCameraActive_;
+	}
+
 #endif
 
-	ImGui::InputFloat3("InputFloat3", inputFloat3);
-	ImGui::SliderFloat3("SliderFloat3", inputFloat3, 0.0f, 1.0f);
-	ImGui::ShowDemoWindow();
+	// カメラの処理
+	if (isDebugCameraActive_) {
 
-	ImGui::End();
+		// デバッグカメラの更新
+		debugCamera_->Update();
 
-	debugCamera_->Update();
+		// デバッグカメラの行列をコピー
+		camera_->matView = debugCamera_->GetCamera().matView;
+		camera_->matProjection = debugCamera_->GetCamera().matProjection;
+
+		// 転送
+		camera_->TransferMatrix();
+
+	} else {
+
+		// 通常カメラの更新
+		camera_->UpdateMatrix();
+	}
+
+	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
+
+		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+
+			if (!worldTransformBlock) {
+				continue;
+			}
+
+			worldTransformBlock->matWorld_ = MakeAffineMatrix(
+				worldTransformBlock->scale_, 
+				worldTransformBlock->rotation_, 
+				worldTransformBlock->translation_);
+
+			worldTransformBlock->TransferMatrix();
+		}
+	}
 }
 
 void GameScene::Draw() {
 
-	Sprite::PreDraw();
-
-	sprite_->Draw();
-
-	Sprite::PostDraw();
-
 	Model::PreDraw();
 
-	player_->Draw();
+	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
+
+		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+
+			// nullptrなら処理しない
+			if (!worldTransformBlock) {
+				continue;
+			}
+
+			blockModel_->Draw(*worldTransformBlock, *camera_);
+		}
+	}
 
 	Model::PostDraw();
 }
