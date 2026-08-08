@@ -1,6 +1,6 @@
 #pragma once
-#include "KamataEngine.h"
-// #include "Player.h"
+#include "KamataEngine.h" 
+#include "Player.h"
 
 class GameScene {
 public:
@@ -24,5 +24,5 @@ private:
 
 	KamataEngine::WorldTransform worldTransform_;
 
-	// Player* player_ = nullptr;
+	 Player* player_ = nullptr;
 };

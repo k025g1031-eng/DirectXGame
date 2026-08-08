@@ -11,8 +11,8 @@ GameScene::~GameScene() {
 	delete model_;
 	model_ = nullptr;
 
-	//delete player_;
-	//player_ = nullptr;
+	delete player_;
+	player_ = nullptr;
 
 	delete camera_;
 	camera_ = nullptr;
@@ -24,14 +24,14 @@ GameScene::~GameScene() {
 
 void GameScene::Initialize() { 
 	
-	textureHandle_ = TextureManager::Load("mario.jpg");
-	soundDataHandle_ = Audio::GetInstance()->LoadWave(" se_sad03.wav");
+	textureHandle_ = TextureManager::Load("mario.png");
+	soundDataHandle_ = Audio::GetInstance()->LoadWave("se_sad03.wav");
 	sprite_ = Sprite::Create(textureHandle_, {100, 50});
 	model_ = Model::Create();
 	debugCamera_ = new DebugCamera(1280, 720);
 	Audio::GetInstance()->PlayWave(soundDataHandle_);
 	voiceHandle_ = Audio::GetInstance()->PlayWave(soundDataHandle_, true);
-	//player_ = new Player();
+	player_ = new Player();
 	
 	camera_ = new Camera();
 	camera_->Initialize();
@@ -39,7 +39,7 @@ void GameScene::Initialize() {
 	PrimitiveDrawer::GetInstance()->DrawLine3d({0, 0, 0}, {0, 10, 0}, {1.0f, 0.0f, 0.0f, 10.f});
 
 	
-	/*player_->Initialize(model_, textureHandle_, camera_);*/
+	player_->Initialize(model_, textureHandle_, camera_);
 	
 
 
@@ -52,7 +52,7 @@ void GameScene::Update() {
 	position.y += 1.0f;
 
 	sprite_->SetPosition(position);
-	//player_->Update();
+	player_->Update();
 
 	if (Input::GetInstance()->TriggerKey(DIK_SPACE)) {
 		Audio::GetInstance()->StopWave(voiceHandle_);
@@ -77,7 +77,7 @@ void GameScene::Draw() {
 	Model::PreDraw();
 	model_->Draw(worldTransform_, *camera_, textureHandle_);
 	Model::PostDraw();
-	/*player_->Draw();*/
+	player_->Draw();
 
 }
 
