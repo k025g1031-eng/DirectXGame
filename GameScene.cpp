@@ -7,7 +7,14 @@ GameScene::GameScene() {}
 
 GameScene::~GameScene() {
 
-	// 3Dモデルデータの解放
+	// 天球の解放
+	delete skydome_;
+	skydome_ = nullptr;
+
+	delete skydomeModel_;
+	skydomeModel_ = nullptr;
+
+	// ブロックモデルの解放
 	delete blockModel_;
 	blockModel_ = nullptr;
 
@@ -33,7 +40,7 @@ GameScene::~GameScene() {
 
 void GameScene::Initialize() {
 
-	// 3Dモデルデータの生成
+	// ブロックモデルの生成
 	blockModel_ = Model::Create();
 
 	// カメラの生成
@@ -43,7 +50,16 @@ void GameScene::Initialize() {
 	// デバッグカメラの生成
 	debugCamera_ = new DebugCamera(1280, 720);
 
-	// 要素数
+	// 天球モデルの生成
+	skydomeModel_ = Model::CreateFromOBJ("Resources/SkyDome/SkyDome", true);
+
+	// 天球の生成
+	skydome_ = new Skydome();
+
+	// 天球の初期化
+	skydome_->Initialize(skydomeModel_, camera_);
+
+	// ブロックの数
 	const uint32_t kNumBlockVertical = 10;
 	const uint32_t kNumBlockHorizontal = 20;
 
@@ -51,12 +67,12 @@ void GameScene::Initialize() {
 	const float kBlockWidth = 2.0f;
 	const float kBlockHeight = 2.0f;
 
-	// 縦方向の要素数を設定
+	// 縦方向の要素数
 	worldTransformBlocks_.resize(kNumBlockVertical);
 
 	for (uint32_t i = 0; i < kNumBlockVertical; ++i) {
 
-		// 横方向の要素数を設定
+		// 横方向の要素数
 		worldTransformBlocks_[i].resize(kNumBlockHorizontal);
 	}
 
@@ -69,18 +85,18 @@ void GameScene::Initialize() {
 
 			worldTransformBlocks_[i][j]->Initialize();
 
-			// 横方向の座標
 			worldTransformBlocks_[i][j]->translation_.x = kBlockWidth * j;
 
-			// 縦方向の座標
 			worldTransformBlocks_[i][j]->translation_.y = kBlockHeight * i;
 		}
 	}
 }
+
 void GameScene::Update() {
 
 #ifdef _DEBUG
 
+	// デバッグカメラの切り替え
 	if (Input::GetInstance()->TriggerKey(DIK_SPACE)) {
 		isDebugCameraActive_ = !isDebugCameraActive_;
 	}
@@ -90,22 +106,25 @@ void GameScene::Update() {
 	// カメラの処理
 	if (isDebugCameraActive_) {
 
-		// デバッグカメラの更新
 		debugCamera_->Update();
 
-		// デバッグカメラの行列をコピー
 		camera_->matView = debugCamera_->GetCamera().matView;
+
 		camera_->matProjection = debugCamera_->GetCamera().matProjection;
 
-		// 転送
 		camera_->TransferMatrix();
 
 	} else {
 
-		// 通常カメラの更新
 		camera_->UpdateMatrix();
 	}
 
+	// 天球の更新
+	if (skydome_) {
+		skydome_->Update();
+	}
+
+	// ブロックの更新
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
@@ -128,11 +147,16 @@ void GameScene::Draw() {
 
 	Model::PreDraw();
 
+	// 天球の描画
+	if (skydome_) {
+		skydome_->Draw();
+	}
+
+	// ブロックの描画
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 
-			// nullptrなら処理しない
 			if (!worldTransformBlock) {
 				continue;
 			}

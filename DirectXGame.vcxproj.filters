@@ -25,6 +25,9 @@
     <Filter Include="transform">
       <UniqueIdentifier>{935bc9ec-980b-4e3f-8d03-13179658619c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="SkyDome">
+      <UniqueIdentifier>{6c782eb8-ec88-4168-ad80-05c89149c546}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -38,6 +41,9 @@
     </ClCompile>
     <ClCompile Include="Transform.cpp">
       <Filter>transform</Filter>
+    </ClCompile>
+    <ClCompile Include="SkyDome.cpp">
+      <Filter>SkyDome</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -98,6 +104,9 @@
     </ClInclude>
     <ClInclude Include="Transform.h">
       <Filter>transform</Filter>
+    </ClInclude>
+    <ClInclude Include="SkyDome.h">
+      <Filter>SkyDome</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

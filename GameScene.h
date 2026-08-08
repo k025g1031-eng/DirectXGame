@@ -1,6 +1,6 @@
 #pragma once
-
 #include "KamataEngine.h"
+#include "Skydome.h"
 #include <vector>
 
 class GameScene {
@@ -13,7 +13,7 @@ public:
 	void Draw();
 
 private:
-	// 3Dモデルデータ
+	// ブロックモデル
 	KamataEngine::Model* blockModel_ = nullptr;
 
 	// ブロックのワールド変換
@@ -27,4 +27,8 @@ private:
 
 	// デバッグカメラ有効
 	bool isDebugCameraActive_ = false;
+
+	// 天球
+	KamataEngine::Model* skydomeModel_ = nullptr;
+	Skydome* skydome_ = nullptr;
 };
