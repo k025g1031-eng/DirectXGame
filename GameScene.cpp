@@ -106,7 +106,7 @@ void GameScene::Initialize() {
 	playerModel_ = Model::Create();
 	playerTextureHandle_ = TextureManager::Load("mario.png");
 	player_ = new Player();
-	player_->Initialize(playerModel_, playerTextureHandle_, camera_);
+	player_->Initialize(playerModel_, playerTextureHandle_, camera_, mapChipField_);
 
 	// 自キャラを追従するカメラ制御
 	cameraController_ = new CameraController();

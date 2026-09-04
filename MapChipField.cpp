@@ -91,3 +91,24 @@ KamataEngine::Vector3 MapChipField::GetMapChipPositionByIndex(uint32_t x, uint32
 
 	return position;
 }
+
+MapChipIndexSet MapChipField::GetMapChipIndexSetByPosition(const KamataEngine::Vector3& position) const {
+	MapChipIndexSet indexSet{};
+
+	// ブロックの中心が整数座標にあるため、半ブロック分ずらして番号へ変換する
+	indexSet.xIndex = static_cast<uint32_t>((position.x + kBlockWidth / 2.0f) / kBlockWidth);
+	indexSet.yIndex = static_cast<uint32_t>((position.y + kBlockHeight / 2.0f) / kBlockHeight);
+
+	return indexSet;
+}
+
+MapChipRect MapChipField::GetRectByIndex(uint32_t x, uint32_t y) const {
+	const KamataEngine::Vector3 center = GetMapChipPositionByIndex(x, y);
+
+	MapChipRect rect{};
+	rect.left = center.x - kBlockWidth / 2.0f;
+	rect.right = center.x + kBlockWidth / 2.0f;
+	rect.bottom = center.y - kBlockHeight / 2.0f;
+	rect.top = center.y + kBlockHeight / 2.0f;
+	return rect;
+}

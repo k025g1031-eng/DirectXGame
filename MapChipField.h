@@ -20,6 +20,24 @@ struct MapChipData {
 };
 
 /// <summary>
+/// マップチップのインデックス
+/// </summary>
+struct MapChipIndexSet {
+	uint32_t xIndex;
+	uint32_t yIndex;
+};
+
+/// <summary>
+/// マップチップの境界
+/// </summary>
+struct MapChipRect {
+	float left;
+	float right;
+	float bottom;
+	float top;
+};
+
+/// <summary>
 /// マップチップフィールド
 /// </summary>
 class MapChipField {
@@ -62,6 +80,10 @@ public:
 	/// <param name="y">縦方向の番号</param>
 	/// <returns>ワールド座標</returns>
 	KamataEngine::Vector3 GetMapChipPositionByIndex(uint32_t x, uint32_t y) const;
+
+	MapChipIndexSet GetMapChipIndexSetByPosition(const KamataEngine::Vector3& position) const;
+
+	MapChipRect GetRectByIndex(uint32_t x, uint32_t y) const;
 
 	/// <summary>
 	/// マップチップデータを取得する

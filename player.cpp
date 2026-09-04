@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "MapChipField.h"
 #include "Transform.h"
 #include <algorithm>
 #include <cassert>
@@ -14,20 +15,25 @@ constexpr float kJumpAcceleration = 0.42f;
 constexpr float kGravityAcceleration = -0.025f;
 constexpr float kLimitFallSpeed = -0.50f;
 constexpr float kGroundHeight = 1.0f;
+constexpr float kPlayerHalfWidth = 0.5f;
+constexpr float kPlayerHalfHeight = 0.5f;
+constexpr float kCollisionEpsilon = 0.01f;
 } // namespace
 
 Player::Player() {}
 
 Player::~Player() {}
 
-void Player::Initialize(Model* model, uint32_t textureHandle, Camera* camera) {
+void Player::Initialize(Model* model, uint32_t textureHandle, Camera* camera, MapChipField* mapChipField) {
 
 	assert(model);
 	assert(camera);
+	assert(mapChipField);
 
 	model_ = model;
 	textureHandle_ = textureHandle;
 	camera_ = camera;
+	mapChipField_ = mapChipField;
 
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = {5.0f, kGroundHeight, -1.0f};
@@ -66,8 +72,14 @@ void Player::Update() {
 		velocity_.y = std::max(velocity_.y, kLimitFallSpeed);
 	}
 
-	worldTransform_.translation_.x += velocity_.x;
-	worldTransform_.translation_.y += velocity_.y;
+	// 移動後の予定位置でマップチップとの衝突を調べる
+	CollisionMapInfo collisionInfo{};
+	collisionInfo.movement = velocity_;
+	CheckMapCollision(collisionInfo);
+
+	worldTransform_.translation_.x += collisionInfo.movement.x;
+	worldTransform_.translation_.y += collisionInfo.movement.y;
+	ApplyMapCollisionResult(collisionInfo);
 
 	// 今回はマップチップをすり抜け、固定の高さだけを床として扱う
 	if (!onGround_ && worldTransform_.translation_.y <= kGroundHeight) {
@@ -82,3 +94,55 @@ void Player::Update() {
 }
 
 void Player::Draw() { model_->Draw(worldTransform_, *camera_, textureHandle_); }
+
+void Player::CheckMapCollision(CollisionMapInfo& info) {
+	// 今回の課題では上方向（天井）のみ判定する
+	CheckMapCollisionUp(info);
+}
+
+void Player::CheckMapCollisionUp(CollisionMapInfo& info) {
+	if (info.movement.y <= 0.0f) {
+		return;
+	}
+
+	Vector3 destination = worldTransform_.translation_;
+	destination.x += info.movement.x;
+	destination.y += info.movement.y;
+
+	Vector3 checkPoints[2] = {
+		GetCornerPosition(destination, false, true),
+		GetCornerPosition(destination, true, true),
+	};
+
+	// 隣の列を誤判定しないよう、左右の検査点をわずかに内側へ寄せる
+	checkPoints[0].x += kCollisionEpsilon;
+	checkPoints[1].x -= kCollisionEpsilon;
+
+	for (const Vector3& checkPoint : checkPoints) {
+		const MapChipIndexSet indexSet = mapChipField_->GetMapChipIndexSetByPosition(checkPoint);
+		if (mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex) != MapChipType::kBlock) {
+			continue;
+		}
+
+		const MapChipRect blockRect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
+		const float correctedMovementY =
+			blockRect.bottom - (worldTransform_.translation_.y + kPlayerHalfHeight) - kCollisionEpsilon;
+
+		info.movement.y = std::min(info.movement.y, correctedMovementY);
+		info.ceiling = true;
+	}
+}
+
+void Player::ApplyMapCollisionResult(const CollisionMapInfo& info) {
+	if (info.ceiling) {
+		// 天井に当たったら上昇を止め、次のフレームから落下へ移る
+		velocity_.y = 0.0f;
+	}
+}
+
+Vector3 Player::GetCornerPosition(const Vector3& center, bool right, bool top) const {
+	Vector3 position = center;
+	position.x += right ? kPlayerHalfWidth : -kPlayerHalfWidth;
+	position.y += top ? kPlayerHalfHeight : -kPlayerHalfHeight;
+	return position;
+}
