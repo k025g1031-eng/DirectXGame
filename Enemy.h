@@ -16,6 +16,8 @@ public:
 	void Update();
 	void Draw();
 
+	const KamataEngine::Vector3& GetWorldPosition() const { return worldTransform_.translation_; }
+
 private:
 	bool IsBlockAt(const KamataEngine::Vector3& position) const;
 

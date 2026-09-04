@@ -21,6 +21,7 @@ public:
 
 	void Update();
 	void Draw();
+	void OnEnemyCollision();
 
 	const KamataEngine::Vector3& GetWorldPosition() const { return worldTransform_.translation_; }
 

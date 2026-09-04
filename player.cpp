@@ -93,6 +93,12 @@ void Player::Update() {
 
 void Player::Draw() { model_->Draw(worldTransform_, *camera_, textureHandle_); }
 
+void Player::OnEnemyCollision() {
+	// 仮の当たり応答：敵に触れたら上方向へ跳ねる
+	velocity_.y = kJumpAcceleration;
+	onGround_ = false;
+}
+
 void Player::CheckMapCollision(CollisionMapInfo& info) {
 	CheckMapCollisionUp(info);
 	CheckMapCollisionDown(info);

@@ -19,6 +19,8 @@ public:
 	void Draw();
 
 private:
+	void CheckAllCollisions();
+
 	// ブロックモデル
 	KamataEngine::Model* blockModel_ = nullptr;
 
@@ -55,4 +57,5 @@ private:
 	KamataEngine::Model* enemyModel_ = nullptr;
 	Enemy* enemy_ = nullptr;
 	uint32_t enemyTextureHandle_ = 0;
+	bool isPlayerEnemyColliding_ = false;
 };

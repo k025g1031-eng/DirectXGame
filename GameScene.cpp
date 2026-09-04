@@ -1,6 +1,7 @@
 #include "GameScene.h"
 
 #include "Transform.h"
+#include <cmath>
 
 using namespace KamataEngine;
 
@@ -176,6 +177,8 @@ void GameScene::Update() {
 		enemy_->Update();
 	}
 
+	CheckAllCollisions();
+
 #ifdef _DEBUG
 
 	// デバッグカメラの切り替え
@@ -280,4 +283,29 @@ void GameScene::Draw() {
 
 	// 3Dモデル描画終了
 	Model::PostDraw();
+}
+
+void GameScene::CheckAllCollisions() {
+	if (!player_ || !enemy_) {
+		return;
+	}
+
+	const Vector3& playerPosition = player_->GetWorldPosition();
+	const Vector3& enemyPosition = enemy_->GetWorldPosition();
+
+	// 自キャラと敵をそれぞれ1x1の矩形として2Dで判定する
+	constexpr float kPlayerHalfWidth = 0.5f;
+	constexpr float kPlayerHalfHeight = 0.5f;
+	constexpr float kEnemyHalfWidth = 0.5f;
+	constexpr float kEnemyHalfHeight = 0.5f;
+
+	const bool isColliding =
+		std::fabs(playerPosition.x - enemyPosition.x) <= kPlayerHalfWidth + kEnemyHalfWidth &&
+		std::fabs(playerPosition.y - enemyPosition.y) <= kPlayerHalfHeight + kEnemyHalfHeight;
+
+	// 接触した瞬間だけ応答し、重なっている間の多重反応を防止する
+	if (isColliding && !isPlayerEnemyColliding_) {
+		player_->OnEnemyCollision();
+	}
+	isPlayerEnemyColliding_ = isColliding;
 }
