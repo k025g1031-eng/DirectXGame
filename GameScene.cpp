@@ -8,6 +8,12 @@ using namespace KamataEngine;
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {
+	delete deathParticles_;
+	deathParticles_ = nullptr;
+
+	delete deathParticleModel_;
+	deathParticleModel_ = nullptr;
+
 	delete enemy_;
 	enemy_ = nullptr;
 
@@ -123,6 +129,11 @@ void GameScene::Initialize() {
 	enemy_ = new Enemy();
 	enemy_->Initialize(enemyModel_, enemyTextureHandle_, camera_, mapChipField_, {10.0f, 1.0f, -1.0f});
 
+	// 自キャラ死亡時の破片パーティクル
+	deathParticleModel_ = Model::Create();
+	deathParticles_ = new DeathParticles();
+	deathParticles_->Initialize(deathParticleModel_, playerTextureHandle_, camera_);
+
 	// 自キャラを追従するカメラ制御
 	cameraController_ = new CameraController();
 	cameraController_->Initialize(camera_, player_);
@@ -178,6 +189,9 @@ void GameScene::Update() {
 	}
 
 	CheckAllCollisions();
+	if (deathParticles_) {
+		deathParticles_->Update();
+	}
 
 #ifdef _DEBUG
 
@@ -281,12 +295,17 @@ void GameScene::Draw() {
 		enemy_->Draw();
 	}
 
+	// 死亡パーティクルの描画
+	if (deathParticles_) {
+		deathParticles_->Draw();
+	}
+
 	// 3Dモデル描画終了
 	Model::PostDraw();
 }
 
 void GameScene::CheckAllCollisions() {
-	if (!player_ || !enemy_) {
+	if (!player_ || !enemy_ || player_->IsDead()) {
 		return;
 	}
 
@@ -305,7 +324,9 @@ void GameScene::CheckAllCollisions() {
 
 	// 接触した瞬間だけ応答し、重なっている間の多重反応を防止する
 	if (isColliding && !isPlayerEnemyColliding_) {
+		const Vector3 deathPosition = playerPosition;
 		player_->OnEnemyCollision();
+		deathParticles_->Spawn(deathPosition);
 	}
 	isPlayerEnemyColliding_ = isColliding;
 }

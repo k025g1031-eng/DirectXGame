@@ -37,6 +37,9 @@
 	<Filter Include="Enemy">
 	  <UniqueIdentifier>{9c3b7264-0a93-46e3-85ac-9f2a7b2f0509}</UniqueIdentifier>
 	</Filter>
+	<Filter Include="DeathParticles">
+	  <UniqueIdentifier>{6d0cf6fb-0df2-4fde-8c1d-6bd8b48f0511}</UniqueIdentifier>
+	</Filter>
   </ItemGroup>
   <ItemGroup>
 	<ClCompile Include="CameraController.cpp">
@@ -44,6 +47,9 @@
 	</ClCompile>
 	<ClCompile Include="Enemy.cpp">
 	  <Filter>Enemy</Filter>
+	</ClCompile>
+	<ClCompile Include="DeathParticles.cpp">
+	  <Filter>DeathParticles</Filter>
 	</ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>ソース ファイル</Filter>
@@ -119,6 +125,9 @@
 	</ClInclude>
 	<ClInclude Include="Enemy.h">
 	  <Filter>Enemy</Filter>
+	</ClInclude>
+	<ClInclude Include="DeathParticles.h">
+	  <Filter>DeathParticles</Filter>
 	</ClInclude>
     <ClInclude Include="GameScene.h">
       <Filter>GameScene</Filter>

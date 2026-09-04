@@ -2,6 +2,7 @@
 
 #include "KamataEngine.h"
 #include "CameraController.h"
+#include "DeathParticles.h"
 #include "Enemy.h"
 #include "MapChipField.h"
 #include "Player.h"
@@ -58,4 +59,8 @@ private:
 	Enemy* enemy_ = nullptr;
 	uint32_t enemyTextureHandle_ = 0;
 	bool isPlayerEnemyColliding_ = false;
+
+	// 自キャラ死亡時の破片
+	KamataEngine::Model* deathParticleModel_ = nullptr;
+	DeathParticles* deathParticles_ = nullptr;
 };

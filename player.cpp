@@ -40,6 +40,10 @@ void Player::Initialize(Model* model, uint32_t textureHandle, Camera* camera, Ma
 }
 
 void Player::Update() {
+	if (isDead_) {
+		return;
+	}
+
 	Input* input = Input::GetInstance();
 
 	// 左右移動（矢印キーとA/Dの両方に対応）
@@ -91,12 +95,20 @@ void Player::Update() {
 	worldTransform_.TransferMatrix();
 }
 
-void Player::Draw() { model_->Draw(worldTransform_, *camera_, textureHandle_); }
+void Player::Draw() {
+	if (!isDead_) {
+		model_->Draw(worldTransform_, *camera_, textureHandle_);
+	}
+}
 
 void Player::OnEnemyCollision() {
-	// 仮の当たり応答：敵に触れたら上方向へ跳ねる
-	velocity_.y = kJumpAcceleration;
-	onGround_ = false;
+	if (isDead_) {
+		return;
+	}
+
+	// 死亡演出中は自キャラ本体を非表示にする
+	isDead_ = true;
+	velocity_ = {0.0f, 0.0f, 0.0f};
 }
 
 void Player::CheckMapCollision(CollisionMapInfo& info) {

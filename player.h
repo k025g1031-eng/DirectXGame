@@ -24,6 +24,7 @@ public:
 	void OnEnemyCollision();
 
 	const KamataEngine::Vector3& GetWorldPosition() const { return worldTransform_.translation_; }
+	bool IsDead() const { return isDead_; }
 
 private:
 	void CheckMapCollision(CollisionMapInfo& info);
@@ -37,6 +38,7 @@ private:
 
 	KamataEngine::Vector3 velocity_ = {0.0f, 0.0f, 0.0f};
 	bool onGround_ = true;
+	bool isDead_ = false;
 
 	KamataEngine::WorldTransform worldTransform_;
 
