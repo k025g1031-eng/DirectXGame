@@ -1,6 +1,10 @@
 #pragma once
+
 #include "KamataEngine.h"
+#include "MapChipField.h"
+#include "Player.h"
 #include "Skydome.h"
+
 #include <vector>
 
 class GameScene {
@@ -29,6 +33,16 @@ private:
 	bool isDebugCameraActive_ = false;
 
 	// 天球
-	KamataEngine::Model* skydomeModel_ = nullptr;
 	Skydome* skydome_ = nullptr;
+
+	// 天球モデル
+	KamataEngine::Model* skydomeModel_ = nullptr;
+
+	// マップチップフィールド
+	MapChipField* mapChipField_ = nullptr;
+
+	// 自キャラ
+	KamataEngine::Model* playerModel_ = nullptr;
+	Player* player_ = nullptr;
+	uint32_t playerTextureHandle_ = 0;
 };

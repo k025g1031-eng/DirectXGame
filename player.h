@@ -15,6 +15,9 @@ public:
 	void Draw();
 
 private:
+	KamataEngine::Vector3 velocity_ = {0.0f, 0.0f, 0.0f};
+	bool onGround_ = true;
+
 	KamataEngine::WorldTransform worldTransform_;
 
 	KamataEngine::Model* model_ = nullptr;
