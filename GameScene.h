@@ -1,6 +1,7 @@
 #pragma once
 
 #include "KamataEngine.h"
+#include "CameraController.h"
 #include "MapChipField.h"
 #include "Player.h"
 #include "Skydome.h"
@@ -45,4 +46,7 @@ private:
 	KamataEngine::Model* playerModel_ = nullptr;
 	Player* player_ = nullptr;
 	uint32_t playerTextureHandle_ = 0;
+
+	// 自キャラを追従するカメラ制御
+	CameraController* cameraController_ = nullptr;
 };

@@ -7,6 +7,9 @@ using namespace KamataEngine;
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {
+	delete cameraController_;
+	cameraController_ = nullptr;
+
 	// 自キャラの解放
 	delete player_;
 	player_ = nullptr;
@@ -105,6 +108,10 @@ void GameScene::Initialize() {
 	player_ = new Player();
 	player_->Initialize(playerModel_, playerTextureHandle_, camera_);
 
+	// 自キャラを追従するカメラ制御
+	cameraController_ = new CameraController();
+	cameraController_->Initialize(camera_, player_);
+
 	// --------------------------------
 	// ブロックの生成
 	// --------------------------------
@@ -147,6 +154,10 @@ void GameScene::Initialize() {
 }
 
 void GameScene::Update() {
+	// 先に自キャラを更新し、その最新座標をカメラが追跡する
+	if (player_) {
+		player_->Update();
+	}
 
 #ifdef _DEBUG
 
@@ -176,9 +187,8 @@ void GameScene::Update() {
 		camera_->TransferMatrix();
 
 	} else {
-
-		// 通常カメラの更新
-		camera_->UpdateMatrix();
+		// 通常時は自キャラを滑らかに追従する
+		cameraController_->Update();
 	}
 
 	// --------------------------------
@@ -187,11 +197,6 @@ void GameScene::Update() {
 
 	if (skydome_) {
 		skydome_->Update();
-	}
-
-	// 自キャラの更新
-	if (player_) {
-		player_->Update();
 	}
 
 	// --------------------------------

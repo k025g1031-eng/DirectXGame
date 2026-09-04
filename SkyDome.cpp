@@ -25,6 +25,8 @@ void Skydome::Initialize(Model* model, Camera* camera) {
 }
 
 void Skydome::Update() {
+	// カメラと同じ位置へ移動し、追従中も天球の端が見えないようにする
+	worldTransform_.translation_ = camera_->translation_;
 
 	// アフィン変換行列を作成
 	worldTransform_.matWorld_ = MakeAffineMatrix(

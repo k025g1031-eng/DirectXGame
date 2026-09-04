@@ -31,8 +31,14 @@
     <Filter Include="MapChipField">
       <UniqueIdentifier>{80272791-383f-409e-a1ad-b0007967029c}</UniqueIdentifier>
     </Filter>
+	<Filter Include="CameraController">
+	  <UniqueIdentifier>{58c72bf8-d405-46d2-a28e-f474c6fa0506}</UniqueIdentifier>
+	</Filter>
   </ItemGroup>
   <ItemGroup>
+	<ClCompile Include="CameraController.cpp">
+	  <Filter>CameraController</Filter>
+	</ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -102,6 +108,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+	<ClInclude Include="CameraController.h">
+	  <Filter>CameraController</Filter>
+	</ClInclude>
     <ClInclude Include="GameScene.h">
       <Filter>GameScene</Filter>
     </ClInclude>

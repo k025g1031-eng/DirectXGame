@@ -14,6 +14,8 @@ public:
 	void Update();
 	void Draw();
 
+	const KamataEngine::Vector3& GetWorldPosition() const { return worldTransform_.translation_; }
+
 private:
 	KamataEngine::Vector3 velocity_ = {0.0f, 0.0f, 0.0f};
 	bool onGround_ = true;
