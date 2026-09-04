@@ -13,6 +13,7 @@ public:
 	void Spawn(const KamataEngine::Vector3& position);
 	void Update();
 	void Draw();
+	bool IsFinished() const;
 
 private:
 	struct Particle {

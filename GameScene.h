@@ -18,6 +18,7 @@ public:
 	void Initialize();
 	void Update();
 	void Draw();
+	bool IsFinished() const { return isFinished_; }
 
 private:
 	void CheckAllCollisions();
@@ -63,4 +64,6 @@ private:
 	// 自キャラ死亡時の破片
 	KamataEngine::Model* deathParticleModel_ = nullptr;
 	DeathParticles* deathParticles_ = nullptr;
+	uint32_t deathTimer_ = 0;
+	bool isFinished_ = false;
 };

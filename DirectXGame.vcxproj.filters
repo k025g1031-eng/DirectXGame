@@ -40,6 +40,9 @@
 	<Filter Include="DeathParticles">
 	  <UniqueIdentifier>{6d0cf6fb-0df2-4fde-8c1d-6bd8b48f0511}</UniqueIdentifier>
 	</Filter>
+	<Filter Include="TitleScene">
+	  <UniqueIdentifier>{536f67dc-c395-47de-b8d3-b2dfcc8e0512}</UniqueIdentifier>
+	</Filter>
   </ItemGroup>
   <ItemGroup>
 	<ClCompile Include="CameraController.cpp">
@@ -50,6 +53,9 @@
 	</ClCompile>
 	<ClCompile Include="DeathParticles.cpp">
 	  <Filter>DeathParticles</Filter>
+	</ClCompile>
+	<ClCompile Include="TitleScene.cpp">
+	  <Filter>TitleScene</Filter>
 	</ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>ソース ファイル</Filter>
@@ -128,6 +134,9 @@
 	</ClInclude>
 	<ClInclude Include="DeathParticles.h">
 	  <Filter>DeathParticles</Filter>
+	</ClInclude>
+	<ClInclude Include="TitleScene.h">
+	  <Filter>TitleScene</Filter>
 	</ClInclude>
     <ClInclude Include="GameScene.h">
       <Filter>GameScene</Filter>

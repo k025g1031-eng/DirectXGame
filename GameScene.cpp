@@ -193,6 +193,14 @@ void GameScene::Update() {
 		deathParticles_->Update();
 	}
 
+	// 死亡演出を最後まで表示してからタイトルへ戻る
+	if (player_ && player_->IsDead()) {
+		++deathTimer_;
+		if (deathTimer_ >= 30 && deathParticles_->IsFinished()) {
+			isFinished_ = true;
+		}
+	}
+
 #ifdef _DEBUG
 
 	// デバッグカメラの切り替え

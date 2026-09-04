@@ -79,6 +79,15 @@ void DeathParticles::Draw() {
 	}
 }
 
+bool DeathParticles::IsFinished() const {
+	for (const Particle& particle : particles_) {
+		if (particle.active) {
+			return false;
+		}
+	}
+	return true;
+}
+
 float DeathParticles::NextRandom() {
 	randomState_ = randomState_ * 1664525u + 1013904223u;
 	return static_cast<float>(randomState_ & 0x00ffffffu) / static_cast<float>(0x01000000u);
