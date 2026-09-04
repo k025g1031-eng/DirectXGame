@@ -2,6 +2,7 @@
 
 #include "KamataEngine.h"
 #include "CameraController.h"
+#include "Enemy.h"
 #include "MapChipField.h"
 #include "Player.h"
 #include "Skydome.h"
@@ -49,4 +50,9 @@ private:
 
 	// 自キャラを追従するカメラ制御
 	CameraController* cameraController_ = nullptr;
+
+	// 雑魚敵
+	KamataEngine::Model* enemyModel_ = nullptr;
+	Enemy* enemy_ = nullptr;
+	uint32_t enemyTextureHandle_ = 0;
 };

@@ -7,6 +7,12 @@ using namespace KamataEngine;
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {
+	delete enemy_;
+	enemy_ = nullptr;
+
+	delete enemyModel_;
+	enemyModel_ = nullptr;
+
 	delete cameraController_;
 	cameraController_ = nullptr;
 
@@ -108,6 +114,14 @@ void GameScene::Initialize() {
 	player_ = new Player();
 	player_->Initialize(playerModel_, playerTextureHandle_, camera_, mapChipField_);
 
+	// --------------------------------
+	// 雑魚敵の生成
+	// --------------------------------
+	enemyModel_ = Model::Create();
+	enemyTextureHandle_ = TextureManager::Load("enemy.png");
+	enemy_ = new Enemy();
+	enemy_->Initialize(enemyModel_, enemyTextureHandle_, camera_, mapChipField_, {10.0f, 1.0f, -1.0f});
+
 	// 自キャラを追従するカメラ制御
 	cameraController_ = new CameraController();
 	cameraController_->Initialize(camera_, player_);
@@ -157,6 +171,9 @@ void GameScene::Update() {
 	// 先に自キャラを更新し、その最新座標をカメラが追跡する
 	if (player_) {
 		player_->Update();
+	}
+	if (enemy_) {
+		enemy_->Update();
 	}
 
 #ifdef _DEBUG
@@ -254,6 +271,11 @@ void GameScene::Draw() {
 	// 自キャラの描画
 	if (player_) {
 		player_->Draw();
+	}
+
+	// 雑魚敵の描画
+	if (enemy_) {
+		enemy_->Draw();
 	}
 
 	// 3Dモデル描画終了

@@ -34,10 +34,16 @@
 	<Filter Include="CameraController">
 	  <UniqueIdentifier>{58c72bf8-d405-46d2-a28e-f474c6fa0506}</UniqueIdentifier>
 	</Filter>
+	<Filter Include="Enemy">
+	  <UniqueIdentifier>{9c3b7264-0a93-46e3-85ac-9f2a7b2f0509}</UniqueIdentifier>
+	</Filter>
   </ItemGroup>
   <ItemGroup>
 	<ClCompile Include="CameraController.cpp">
 	  <Filter>CameraController</Filter>
+	</ClCompile>
+	<ClCompile Include="Enemy.cpp">
+	  <Filter>Enemy</Filter>
 	</ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>ソース ファイル</Filter>
@@ -110,6 +116,9 @@
   <ItemGroup>
 	<ClInclude Include="CameraController.h">
 	  <Filter>CameraController</Filter>
+	</ClInclude>
+	<ClInclude Include="Enemy.h">
+	  <Filter>Enemy</Filter>
 	</ClInclude>
     <ClInclude Include="GameScene.h">
       <Filter>GameScene</Filter>
