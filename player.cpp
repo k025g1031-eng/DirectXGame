@@ -81,11 +81,9 @@ void Player::Update() {
 	worldTransform_.translation_.y += collisionInfo.movement.y;
 	ApplyMapCollisionResult(collisionInfo);
 
-	// 今回はマップチップをすり抜け、固定の高さだけを床として扱う
-	if (!onGround_ && worldTransform_.translation_.y <= kGroundHeight) {
-		worldTransform_.translation_.y = kGroundHeight;
-		velocity_.y = 0.0f;
-		onGround_ = true;
+	// 接地中に足元のブロックがなくなったら落下を開始する
+	if (onGround_ && !collisionInfo.landing && !IsSupportedByBlock()) {
+		onGround_ = false;
 	}
 
 	worldTransform_.matWorld_ = MakeAffineMatrix(
@@ -96,8 +94,10 @@ void Player::Update() {
 void Player::Draw() { model_->Draw(worldTransform_, *camera_, textureHandle_); }
 
 void Player::CheckMapCollision(CollisionMapInfo& info) {
-	// 今回の課題では上方向（天井）のみ判定する
 	CheckMapCollisionUp(info);
+	CheckMapCollisionDown(info);
+	CheckMapCollisionLeft(info);
+	CheckMapCollisionRight(info);
 }
 
 void Player::CheckMapCollisionUp(CollisionMapInfo& info) {
@@ -125,11 +125,97 @@ void Player::CheckMapCollisionUp(CollisionMapInfo& info) {
 		}
 
 		const MapChipRect blockRect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
-		const float correctedMovementY =
-			blockRect.bottom - (worldTransform_.translation_.y + kPlayerHalfHeight) - kCollisionEpsilon;
+		const float correctedMovementY = blockRect.bottom - (worldTransform_.translation_.y + kPlayerHalfHeight);
 
 		info.movement.y = std::min(info.movement.y, correctedMovementY);
 		info.ceiling = true;
+	}
+}
+
+void Player::CheckMapCollisionDown(CollisionMapInfo& info) {
+	if (info.movement.y >= 0.0f) {
+		return;
+	}
+
+	Vector3 destination = worldTransform_.translation_;
+	destination.x += info.movement.x;
+	destination.y += info.movement.y;
+
+	Vector3 checkPoints[2] = {
+		GetCornerPosition(destination, false, false),
+		GetCornerPosition(destination, true, false),
+	};
+	checkPoints[0].x += kCollisionEpsilon;
+	checkPoints[1].x -= kCollisionEpsilon;
+
+	for (const Vector3& checkPoint : checkPoints) {
+		const MapChipIndexSet indexSet = mapChipField_->GetMapChipIndexSetByPosition(checkPoint);
+		if (mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex) != MapChipType::kBlock) {
+			continue;
+		}
+
+		const MapChipRect blockRect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
+		const float correctedMovementY = blockRect.top - (worldTransform_.translation_.y - kPlayerHalfHeight);
+		info.movement.y = std::max(info.movement.y, correctedMovementY);
+		info.landing = true;
+	}
+}
+
+void Player::CheckMapCollisionLeft(CollisionMapInfo& info) {
+	if (info.movement.x >= 0.0f) {
+		return;
+	}
+
+	Vector3 destination = worldTransform_.translation_;
+	destination.x += info.movement.x;
+	destination.y += info.movement.y;
+
+	Vector3 checkPoints[2] = {
+		GetCornerPosition(destination, false, false),
+		GetCornerPosition(destination, false, true),
+	};
+	checkPoints[0].y += kCollisionEpsilon;
+	checkPoints[1].y -= kCollisionEpsilon;
+
+	for (const Vector3& checkPoint : checkPoints) {
+		const MapChipIndexSet indexSet = mapChipField_->GetMapChipIndexSetByPosition(checkPoint);
+		if (mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex) != MapChipType::kBlock) {
+			continue;
+		}
+
+		const MapChipRect blockRect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
+		const float correctedMovementX = blockRect.right - (worldTransform_.translation_.x - kPlayerHalfWidth);
+		info.movement.x = std::max(info.movement.x, correctedMovementX);
+		info.hitWall = true;
+	}
+}
+
+void Player::CheckMapCollisionRight(CollisionMapInfo& info) {
+	if (info.movement.x <= 0.0f) {
+		return;
+	}
+
+	Vector3 destination = worldTransform_.translation_;
+	destination.x += info.movement.x;
+	destination.y += info.movement.y;
+
+	Vector3 checkPoints[2] = {
+		GetCornerPosition(destination, true, false),
+		GetCornerPosition(destination, true, true),
+	};
+	checkPoints[0].y += kCollisionEpsilon;
+	checkPoints[1].y -= kCollisionEpsilon;
+
+	for (const Vector3& checkPoint : checkPoints) {
+		const MapChipIndexSet indexSet = mapChipField_->GetMapChipIndexSetByPosition(checkPoint);
+		if (mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex) != MapChipType::kBlock) {
+			continue;
+		}
+
+		const MapChipRect blockRect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
+		const float correctedMovementX = blockRect.left - (worldTransform_.translation_.x + kPlayerHalfWidth);
+		info.movement.x = std::min(info.movement.x, correctedMovementX);
+		info.hitWall = true;
 	}
 }
 
@@ -138,6 +224,32 @@ void Player::ApplyMapCollisionResult(const CollisionMapInfo& info) {
 		// 天井に当たったら上昇を止め、次のフレームから落下へ移る
 		velocity_.y = 0.0f;
 	}
+	if (info.landing) {
+		velocity_.y = 0.0f;
+		onGround_ = true;
+	}
+	if (info.hitWall) {
+		velocity_.x = 0.0f;
+	}
+}
+
+bool Player::IsSupportedByBlock() const {
+	Vector3 checkPoints[2] = {
+		GetCornerPosition(worldTransform_.translation_, false, false),
+		GetCornerPosition(worldTransform_.translation_, true, false),
+	};
+	checkPoints[0].x += kCollisionEpsilon;
+	checkPoints[1].x -= kCollisionEpsilon;
+	checkPoints[0].y -= kCollisionEpsilon;
+	checkPoints[1].y -= kCollisionEpsilon;
+
+	for (const Vector3& checkPoint : checkPoints) {
+		const MapChipIndexSet indexSet = mapChipField_->GetMapChipIndexSetByPosition(checkPoint);
+		if (mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex) == MapChipType::kBlock) {
+			return true;
+		}
+	}
+	return false;
 }
 
 Vector3 Player::GetCornerPosition(const Vector3& center, bool right, bool top) const {

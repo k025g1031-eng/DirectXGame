@@ -5,6 +5,8 @@ class MapChipField;
 
 struct CollisionMapInfo {
 	bool ceiling = false;
+	bool landing = false;
+	bool hitWall = false;
 	KamataEngine::Vector3 movement = {0.0f, 0.0f, 0.0f};
 };
 
@@ -25,7 +27,11 @@ public:
 private:
 	void CheckMapCollision(CollisionMapInfo& info);
 	void CheckMapCollisionUp(CollisionMapInfo& info);
+	void CheckMapCollisionDown(CollisionMapInfo& info);
+	void CheckMapCollisionLeft(CollisionMapInfo& info);
+	void CheckMapCollisionRight(CollisionMapInfo& info);
 	void ApplyMapCollisionResult(const CollisionMapInfo& info);
+	bool IsSupportedByBlock() const;
 	KamataEngine::Vector3 GetCornerPosition(const KamataEngine::Vector3& center, bool right, bool top) const;
 
 	KamataEngine::Vector3 velocity_ = {0.0f, 0.0f, 0.0f};
